@@ -20,7 +20,7 @@ class UserViewModel(private val userRepos: UsersRepos) : ViewModel() {
         fetchUsers()
     }
 
-    private fun fetchUsers() {
+    fun fetchUsers() {
         users.postValue(Resource.loading(null))
         compositeDisposable.add(
             userRepos.getUsers()
