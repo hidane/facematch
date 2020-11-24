@@ -58,7 +58,6 @@ class UserActivity : AppCompatActivity() {
                             )
                         })
                     }
-                    Toast.makeText(this, it.data.toString(), Toast.LENGTH_LONG).show()
                 }
                 Status.LOADING -> {
 
@@ -66,7 +65,6 @@ class UserActivity : AppCompatActivity() {
                 Status.ERROR -> {
                     //Handle Error
                     pb_loader.visibility = View.GONE
-                    Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
                 }
             }
         })

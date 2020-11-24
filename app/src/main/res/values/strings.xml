@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">FaceMatch</string>
+    <string name="tile_name">My Name is</string>
+    <string name="title_dob">My Date Of Birth is</string>
+    <string name="title_address">My Address is</string>
+    <string name="title_contact">My Contact Details are</string>
+    <string name="body_contact">Cell No :- %2$s \n Phone No :- %3$s</string>
 </resources>
