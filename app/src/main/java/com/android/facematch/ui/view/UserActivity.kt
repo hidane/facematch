@@ -3,6 +3,7 @@ package com.android.facematch.ui.view
 import UserViewModel
 import ViewModelFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -21,7 +22,7 @@ import kotlinx.android.synthetic.main.activity_user.*
  * Created by Abhishek.s on 21,November,2020
  */
 
-class UserActivity : AppCompatActivity() {
+class UserActivity : AppCompatActivity(), MyCardView.SwipeListener {
 
     private lateinit var userViewModel: UserViewModel
 
@@ -54,7 +55,7 @@ class UserActivity : AppCompatActivity() {
                         sp_view.addView(it.results?.get(0)?.user?.let { it1 ->
                             MyCardView(
                                 applicationContext,
-                                it1, sp_view
+                                it1, sp_view, this
                             )
                         })
                     }
@@ -76,5 +77,15 @@ class UserActivity : AppCompatActivity() {
             this,
             ViewModelFactory(NetworkDao(NetworkImpl()))
         ).get(UserViewModel::class.java)
+    }
+
+    override fun onSwipedIn() {
+        pb_loader.visibility = View.VISIBLE
+        userViewModel.fetchUsers()
+    }
+
+    override fun onSwipedOut() {
+        pb_loader.visibility = View.VISIBLE
+        userViewModel.fetchUsers()
     }
 }

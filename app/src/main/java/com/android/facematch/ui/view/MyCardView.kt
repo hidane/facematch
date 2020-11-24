@@ -15,6 +15,8 @@ import com.mindorks.placeholderview.annotations.NonReusable
 import com.mindorks.placeholderview.annotations.Resolve
 import com.mindorks.placeholderview.annotations.View
 import com.mindorks.placeholderview.annotations.swipe.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -22,8 +24,13 @@ import com.mindorks.placeholderview.annotations.swipe.*
  */
 @NonReusable
 @Layout(R.layout.layout_card)
-class MyCardView(context: Context, user: User, swipeView: SwipePlaceHolderView) :
+class MyCardView(context: Context, user: User, swipeView: SwipePlaceHolderView, swipeListener: SwipeListener) :
     android.view.View.OnClickListener {
+
+    interface SwipeListener {
+        fun onSwipedIn()
+        fun onSwipedOut()
+    }
 
     @View(R.id.civ_profile_image)
     var profileImageView: ImageView? = null
@@ -49,6 +56,8 @@ class MyCardView(context: Context, user: User, swipeView: SwipePlaceHolderView) 
     var user: User = user
     var mContext: Context = context
     var mSwipeView: SwipePlaceHolderView = swipeView
+    var dob: String? = null
+    var swipeListener: SwipeListener? = swipeListener
 
     @Resolve
     fun onResolved() {
@@ -60,6 +69,8 @@ class MyCardView(context: Context, user: User, swipeView: SwipePlaceHolderView) 
                 .into(it)
         }
 
+        convertDate()
+
         personMenu?.setOnClickListener(this)
         dobMenu?.setOnClickListener(this)
         addressMenu?.setOnClickListener(this)
@@ -68,10 +79,19 @@ class MyCardView(context: Context, user: User, swipeView: SwipePlaceHolderView) 
         personMenu?.performClick()
     }
 
+    fun convertDate() {
+        val date = user.dob?.toLong()?.times(1000L)?.let { Date(it) }
+        // format of the date
+        // format of the date
+        val jdf = SimpleDateFormat("dd-MM-yyyy")
+        jdf.timeZone = TimeZone.getTimeZone("GMT-4")
+        dob = jdf.format(date)
+    }
+
     @SwipeOut
     fun onSwipedOut() {
         Log.d("EVENT", "onSwipedOut")
-        mSwipeView.addView(this)
+        swipeListener?.onSwipedIn()
     }
 
     @SwipeCancelState
@@ -82,6 +102,7 @@ class MyCardView(context: Context, user: User, swipeView: SwipePlaceHolderView) 
     @SwipeIn
     private fun onSwipeIn() {
         Log.d("EVENT", "onSwipedIn")
+        swipeListener?.onSwipedOut()
     }
 
     @SwipeInState
@@ -108,7 +129,7 @@ class MyCardView(context: Context, user: User, swipeView: SwipePlaceHolderView) 
 
             dobMenu -> {
                 title?.text = mContext.getString(R.string.title_dob)
-                description?.text = user.dob
+                description?.text = dob
                 personMenu?.isSelected = false
                 dobMenu?.isSelected = true
                 addressMenu?.isSelected = false
@@ -118,7 +139,7 @@ class MyCardView(context: Context, user: User, swipeView: SwipePlaceHolderView) 
             addressMenu -> {
                 title?.text = mContext.getString(R.string.title_address)
                 description?.text =
-                    user.location?.street + "," + user.location?.city + "," + user.location?.state
+                    user.location?.street + "," + user.location?.city
 
                 personMenu?.isSelected = false
                 dobMenu?.isSelected = false
