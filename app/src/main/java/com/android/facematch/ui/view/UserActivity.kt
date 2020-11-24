@@ -11,26 +11,38 @@ import com.android.facematch.R
 import com.android.facematch.data.network.NetworkDao
 import com.android.facematch.data.network.NetworkImpl
 import com.android.facematch.utils.Status
+import com.mindorks.placeholderview.SwipeDecor
+import com.mindorks.placeholderview.SwipePlaceHolderView
+import com.mindorks.placeholderview.SwipeViewBuilder
 import kotlinx.android.synthetic.main.activity_user.*
+
 
 /**
  * Created by Abhishek.s on 21,November,2020
  */
 
-class UserActivity : AppCompatActivity(), View.OnClickListener {
+class UserActivity : AppCompatActivity() {
+
     private lateinit var userViewModel: UserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user)
-        btn_sample.setOnClickListener(this)
-        setUpRecycler()
+        setUpCardView()
         setupViewModel()
         setupObserver()
     }
 
-    private fun setUpRecycler() {
-
+    private fun setUpCardView() {
+        sp_view.getBuilder<SwipePlaceHolderView, SwipeViewBuilder<SwipePlaceHolderView>>()
+            .setDisplayViewCount(1)
+            .setSwipeDecor(
+                SwipeDecor()
+                    .setPaddingTop(20)
+                    .setRelativeScale(0.01f)
+                    .setSwipeInMsgLayoutId(R.layout.layout_swipe_out)
+                    .setSwipeOutMsgLayoutId(R.layout.layout_swipe_in)
+            )
     }
 
     private fun setupObserver() {
@@ -38,8 +50,15 @@ class UserActivity : AppCompatActivity(), View.OnClickListener {
             when (it.status) {
                 Status.SUCCESS -> {
                     pb_loader.visibility = View.GONE
+                    it.data?.let {
+                        sp_view.addView(it.results?.get(0)?.user?.let { it1 ->
+                            MyCardView(
+                                applicationContext,
+                                it1, sp_view
+                            )
+                        })
+                    }
                     Toast.makeText(this, it.data.toString(), Toast.LENGTH_LONG).show()
-                    btn_sample.visibility = View.VISIBLE
                 }
                 Status.LOADING -> {
 
@@ -48,7 +67,6 @@ class UserActivity : AppCompatActivity(), View.OnClickListener {
                     //Handle Error
                     pb_loader.visibility = View.GONE
                     Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
-                    btn_sample.visibility = View.VISIBLE
                 }
             }
         })
@@ -60,15 +78,5 @@ class UserActivity : AppCompatActivity(), View.OnClickListener {
             this,
             ViewModelFactory(NetworkDao(NetworkImpl()))
         ).get(UserViewModel::class.java)
-    }
-
-    override fun onClick(p0: View?) {
-        when (p0) {
-            btn_sample -> {
-                pb_loader.visibility = View.VISIBLE
-                btn_sample.visibility = View.GONE
-                userViewModel.fetchUsers()
-            }
-        }
     }
 }

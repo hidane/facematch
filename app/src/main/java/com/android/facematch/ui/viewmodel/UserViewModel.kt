@@ -11,10 +11,10 @@ import io.reactivex.schedulers.Schedulers
 /**
  * Created by Abhishek.s on 26,October,2020
  */
-class UserViewModel(private val userRepos: UsersRepos) : ViewModel() {
+open class UserViewModel(open val userRepos: UsersRepos) : ViewModel() {
 
-    private val users = MutableLiveData<Resource<Users>>()
-    private val compositeDisposable = CompositeDisposable()
+    open val users = MutableLiveData<Resource<Users>>()
+    open val compositeDisposable = CompositeDisposable()
 
     init {
         fetchUsers()

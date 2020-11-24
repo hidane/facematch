@@ -7,7 +7,7 @@ import io.reactivex.Single
 /**
  * Created by Abhishek.s on 26,October,2020
  */
-class UsersRepos (private val networkDao: NetworkDao) {
+class UsersRepos (public val networkDao: NetworkDao) {
 
     fun getUsers() : Single<Users> {
         return networkDao.getUsers()
