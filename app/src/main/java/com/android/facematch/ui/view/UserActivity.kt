@@ -1,21 +1,19 @@
 package com.android.facematch.ui.view
 
-import UserViewModel
-import ViewModelFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProviders
 import com.android.facematch.R
-import com.android.facematch.data.network.NetworkDao
-import com.android.facematch.data.network.NetworkImpl
-import com.android.facematch.utils.Status
+import com.android.facematch.data.api.ApiClient
+import com.android.facematch.data.model.Users
 import com.mindorks.placeholderview.SwipeDecor
 import com.mindorks.placeholderview.SwipePlaceHolderView
 import com.mindorks.placeholderview.SwipeViewBuilder
 import kotlinx.android.synthetic.main.activity_user.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 /**
@@ -24,14 +22,11 @@ import kotlinx.android.synthetic.main.activity_user.*
 
 class UserActivity : AppCompatActivity(), MyCardView.SwipeListener {
 
-    private lateinit var userViewModel: UserViewModel
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user)
         setUpCardView()
-        setupViewModel()
-        setupObserver()
+        fetchUsers()
     }
 
     private fun setUpCardView() {
@@ -46,46 +41,40 @@ class UserActivity : AppCompatActivity(), MyCardView.SwipeListener {
             )
     }
 
-    private fun setupObserver() {
-        userViewModel.getUsers().observe(this, {
-            when (it.status) {
-                Status.SUCCESS -> {
-                    pb_loader.visibility = View.GONE
-                    it.data?.let {
-                        sp_view.addView(it.results?.get(0)?.user?.let { it1 ->
-                            MyCardView(
-                                applicationContext,
-                                it1, sp_view, this
-                            )
-                        })
-                    }
-                }
-                Status.LOADING -> {
+    private fun fetchUsers() {
 
-                }
-                Status.ERROR -> {
-                    //Handle Error
-                    pb_loader.visibility = View.GONE
+        pb_loader.visibility = View.VISIBLE
+
+        val call: Call<Users> = ApiClient.getClient.getUsers()
+
+        call.enqueue(object : Callback<Users> {
+
+            override fun onResponse(call: Call<Users>, response: Response<Users>) {
+                pb_loader.visibility = View.GONE
+
+                response.body()?.let {
+                    sp_view.addView(it.results?.get(0)?.user?.let { it1 ->
+                        MyCardView(
+                            applicationContext,
+                            it1, sp_view, this@UserActivity
+                        )
+                    })
                 }
             }
+
+            override fun onFailure(call: Call<Users>, t: Throwable?) {
+                pb_loader.visibility = View.GONE
+                Log.e("Places Api Error", t.toString())
+            }
         })
-    }
 
-
-    private fun setupViewModel() {
-        userViewModel = ViewModelProviders.of(
-            this,
-            ViewModelFactory(NetworkDao(NetworkImpl()))
-        ).get(UserViewModel::class.java)
     }
 
     override fun onSwipedIn() {
-        pb_loader.visibility = View.VISIBLE
-        userViewModel.fetchUsers()
+        fetchUsers()
     }
 
     override fun onSwipedOut() {
-        pb_loader.visibility = View.VISIBLE
-        userViewModel.fetchUsers()
+        fetchUsers()
     }
 }
