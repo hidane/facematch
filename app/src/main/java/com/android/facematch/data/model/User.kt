@@ -1,12 +1,21 @@
 package com.android.facematch.data.model
 
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
+import io.realm.annotations.Required
+import java.util.*
 
 /**
  * Created by Abhishek.s on 21,November,2020
  */
 
 data class User(
+
+    @PrimaryKey
+    @Required
+    var userId: String? = null,
+
     @SerializedName("gender")
     var gender: String? = null,
 
@@ -54,4 +63,8 @@ data class User(
 
     @SerializedName("picture")
     var picture: String? = null
-)
+) : RealmObject() {
+    init {
+        userId = Random().nextInt(50000).toString() + ""
+    }
+}

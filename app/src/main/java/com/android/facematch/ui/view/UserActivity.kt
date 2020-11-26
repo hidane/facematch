@@ -6,6 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.android.facematch.R
 import com.android.facematch.data.api.ApiClient
+import com.android.facematch.data.model.User
 import com.android.facematch.data.model.Users
 import com.mindorks.placeholderview.SwipeDecor
 import com.mindorks.placeholderview.SwipePlaceHolderView
@@ -21,6 +22,9 @@ import retrofit2.Response
  */
 
 class UserActivity : AppCompatActivity(), MyCardView.SwipeListener {
+
+    var favouriteUsers: ArrayList<User>? = ArrayList()
+    var currentUser: User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +57,9 @@ class UserActivity : AppCompatActivity(), MyCardView.SwipeListener {
                 pb_loader.visibility = View.GONE
 
                 response.body()?.let {
+
+                    currentUser = it.results?.get(0)?.user
+
                     sp_view.addView(it.results?.get(0)?.user?.let { it1 ->
                         MyCardView(
                             applicationContext,
@@ -71,6 +78,9 @@ class UserActivity : AppCompatActivity(), MyCardView.SwipeListener {
     }
 
     override fun onSwipedIn() {
+        currentUser?.let {
+            favouriteUsers?.add(it)
+        }
         fetchUsers()
     }
 
