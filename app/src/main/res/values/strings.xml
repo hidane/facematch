@@ -4,5 +4,9 @@
     <string name="title_dob">My Date Of Birth is</string>
     <string name="title_address">My Address is</string>
     <string name="title_contact">My Contact Details are</string>
-    <string name="body_contact">Cell No :- %2$s \n Phone No :- %3$s</string>
+    <string name="body_contact">Cell No :- %1$s \n Phone No :- %2$s</string>
+    <string name="favourites">Favourites</string>
+    <string name="item_name"><b>Name :- </b> %1$s</string>
+    <string name="item_dob"><b>D.O.B. :- </b> %1$s</string>
+    <string name="item_phone"><b>Phone :- </b> %1$s</string>
 </resources>

@@ -120,7 +120,7 @@ class MyCardView(context: Context, user: User, swipeView: SwipePlaceHolderView, 
             personMenu -> {
                 title?.text = mContext.getString(R.string.tile_name)
                 description?.text =
-                    user.name?.title + " " + user?.name?.first + " " + user?.name?.last
+                    user.name?.title + " " + user.name?.first + " " + user.name?.last
                 personMenu?.isSelected = true
                 dobMenu?.isSelected = false
                 addressMenu?.isSelected = false
@@ -150,7 +150,7 @@ class MyCardView(context: Context, user: User, swipeView: SwipePlaceHolderView, 
             contactMenu -> {
                 title?.text = mContext.getString(R.string.title_contact)
                 description?.text =
-                    mContext.getString(R.string.body_contact, user.email, user.cell, user.phone)
+                    mContext.getString(R.string.body_contact, user.cell, user.phone)
 
                 personMenu?.isSelected = false
                 dobMenu?.isSelected = false
